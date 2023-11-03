@@ -7,13 +7,19 @@ All things on earth exist under the cold cruel hands of father Time, and the mov
 
 ## Research questions
 
--Can we find any trends in movie release dates within a month, a year ? 
+-Can we find any trends in movie release dates within a month, a year, and are there dates or periods that producers avoid ?
+
+
 -Do these trends change across countries ? across history ?
+
+
 -What influence does the release date of a movie within a month/year have on its score and gross ?
+
+
 -Do certain genres favor certain periods of the year ? (e.g: Horror at Halloween, family movies at Christmas) 
+
+
 -Does the amount of time between a movie’s release date and Oscar nominations influence its chances to be nominated and/or win ?
--How do we perceive older movies differently from modern ones ? Does our perception of a movie change with time ?
--Are there dates or periods that producers avoid ? For monetary or superstitious reasons ?  (fridays falling on the 13th, the number 4 in japanese culture)
 
 
 ## Proposed addtional datasets 
