@@ -1,9 +1,0 @@
-Wikipedia movie ID
-Freebase movie ID
-Movie name
-Movie release date
-Movie box office revenue
-Movie runtime
-Movie languages (Freebase ID:name tuples)
-Movie countries (Freebase ID:name tuples)
-Movie genres (Freebase ID:name tuples)
