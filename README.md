@@ -45,10 +45,10 @@ Principal components analysis is a dimensionality reduction and signal enhanceme
 ## Proposed timeline
 
 week 0. 13 Nov 2023 ~ 19 Nov 2023\
-week 1. finish homework 2 before next weeks friday. Have a meeting with the supervisor on friday to talk about the research method\
-week 2. learn about how to create a website using github and go deeper into analysis. \
+week 1. finish homework 2 before Friday. Have a meeting with the supervisor on Friday to talk about the research method\
+week 2. learn about how to create a website using github and go deeper into our analysis. \
 week 3. get feedback from milestone 2 and precise our research questions. \
-week 4. devolpe website and finalize analysis. \
+week 4. devolpe the website and finalize the analysis. \
 week 5. cleanup of the jupyter notebook, finish website and readme. 
 
 Note: have meeting with the superviser each week.
