@@ -44,7 +44,19 @@ Principal components analysis is a dimensionality reduction and signal enhanceme
 
 ## Proposed timeline
 
+week 0. right now.
+week 1. finish homework 2 before next weeks friday.
+week 2. learn about how to create a website using github and go deeper into analysis
+week 3. get feedback from milestone 2 and precise our research questions
+week 4. devol website and finalize analysis
+week 5. cleanup of the jupyter notebook, finish website and readme.
+
 ## Organization whithin the team 
+
+Haoyu Wen : Ordinary least square \
+Florian Delavy : Genres analysis \
+Leo Sperber : Principal component analysis \
+Robin Patriarca: Data visualization and preprocessing
 
 ## Questions 
 
