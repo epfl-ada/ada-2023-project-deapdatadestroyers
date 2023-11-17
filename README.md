@@ -35,7 +35,7 @@ Preprocessing: One obviously important component of our analysis is dates, so a 
 
 
 ### OLS
-Ordinary least square is a way to find the relationship between the dependent variables (i.e. Box office) and independent variables (i.e. dummies variables of the month). Here, we use December as a benchmark; in other words, only a constant term and dummy variable for January to November will be included in the independent variables. We run the regression for the whole data, different countries and different time intervals. We will monitor the t-values of the coefficients and R-square of each regression. And we will try to add some independent variables to eliminate the effect of "confounder".
+Ordinary least square is a way to find the relationship between the dependent variables (i.e. Box office) and independent variables (i.e. dummies variables of the month). Here, we use December as a benchmark; in other words, only a constant term and dummy variable for January to November will be included in the independent variables. We run the regression for the whole data, on different countries and different time intervals. We will monitor the t-values of the coefficients and R-square of each regression. And we will try to add some independent variables to eliminate the effect of "confounder". 
 
 
 
