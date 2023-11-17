@@ -23,14 +23,17 @@ All things on earth exist under the cold cruel hands of father Time, and the mov
 
 
 ## Proposed addtional datasets 
-- "The Movies Dataset" from Kaggle : This dataset ressembles the one of CMU in terms of contents. We used this dataset to enrich the CMU dataset by filling its missing values. This would allow us to increase the robustness of the CMU dataset but also to expand and broadened our scope for analysis. It provided us with the means to conduct deeper and more precise evaluations of the cinematic information at hand.
+- "The Movies Dataset" from Kaggle : This dataset’s content is very similar to the CMU dataset’s, which here works to our advantage because we used to complete missing data in our dataset. This allows us to work with a more robust dataset and broaden the scope of our analysis. 
 
-- "IMDB Dataset" from Kaggle : This dataset offers a wealth of information, including critical metrics like movie ratings and the volume of votes in line with IMDB standards. Such data points are key indicators of a film's success and popularity, providing valuable insights not present in the initial dataset.
+- "IMDB Dataset" from Kaggle : Gross isn’t a sufficient metric to evaluate public perception, which in our analysis, is critical. That’s where this additional dataset comes in. It offers key indicators of a movie’s success not present in our initial dataset such as average rating and the volume of votes a movie received. 
 
 - "The Oscar Award, 1927-2023" from Kaggle : This dataset features Oscar wins and nominations which is a significant measure of a movie's acclaim and success. Moreover, this attribute is often closely correlated with the film's release date, offering a temporal dimension to the success metrics in our analysis. This dataset contains the movies rewarded each year and for each category. 
 
 ## Methods
 
+Preprocessing: One obviously important component of our analysis is dates, so a big part of our preprocessing phase was converting our dates into other formats. We added to our original dataframe columns giving us information the release date’s day of the week, position in the year and week number. Having access to these new formats will facilitate further analysis.
+
+Principal components analysis is a dimensionality reduction and signal enhancement technique that will let us look at the most common variations within our dataset. Obvious trends in movie releases across the year are easy to observe and analyze, for example the summer blockbuster season. But smaller, localized and significant variations can be easy to miss. Here we’ll use PCA on the release dates and ratings of each year to spot these trends, how they change across genre, time and place, and how they can be explained. 
 
 ## Proposed timeline
 
