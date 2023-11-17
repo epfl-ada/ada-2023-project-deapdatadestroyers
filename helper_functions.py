@@ -147,6 +147,28 @@ def get_movies_country(df, country):
     df_temp = df_temp[df_temp['Countries (Freebase ID:name tuples)'].str.contains(country)==False]
     return df_temp
 
+def get_time_stamps_df(df):
+    """
+    This function is to use the year, month and day to get the day of the week of the release of the movie.
+    """
+    df_time_stamps = df.copy(deep=True)
+
+    df_time_stamps.dropna(subset=['Month'], inplace=True)
+    temp = (df_time_stamps['Year'].astype(str) + '-' 
+                                                 + df_time_stamps['Month'].astype(str) + '-' 
+                                                 + df_time_stamps['Day'].astype(str))
+
+
+    df_time_stamps['Weekday'] = temp.apply(lambda x: pd.to_datetime(x, errors = 'coerce').dayofweek)
+    df_time_stamps.dropna(subset=['Weekday'], inplace=True)
+    df_time_stamps['Weekday'] = df_time_stamps['Weekday'].apply(int)
+
+
+    df_time_stamps['Weekday Name'] = temp.apply(lambda x: pd.to_datetime(x, errors = 'coerce')).dt.day_name()
+
+    
+    return df_time_stamps
+
 
 def new_date_format(df_movie):
     """
