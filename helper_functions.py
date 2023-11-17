@@ -129,7 +129,7 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
         
         sbn.boxplot(x=group, y=var, order = order, data=df)
         plt.title(f'{var} for movies by {group}')
-        plt.xlabel('Day of the month')
+        plt.xlabel(f'{group}')
         plt.ylabel(f'Average {var}')
         if logscale:
             plt.yscale("log")
@@ -142,32 +142,10 @@ def get_movies_genre(df, genre):
     df_temp = df_temp[df_temp['genres (Freebase ID:name tuples)'].str.contains(genre)==True] 
     return df_temp
 
-def get_movies_country(df, country):
+def get_movies_country(df, country, contains=True):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['Countries (Freebase ID:name tuples)'].str.contains(country)==False]
+    df_temp = df_temp[df_temp['Countries (Freebase ID:name tuples)'].str.contains(country)==contains]
     return df_temp
-
-def get_time_stamps_df(df):
-    """
-    This function is to use the year, month and day to get the day of the week of the release of the movie.
-    """
-    df_time_stamps = df.copy(deep=True)
-
-    df_time_stamps.dropna(subset=['Month'], inplace=True)
-    temp = (df_time_stamps['Year'].astype(str) + '-' 
-                                                 + df_time_stamps['Month'].astype(str) + '-' 
-                                                 + df_time_stamps['Day'].astype(str))
-
-
-    df_time_stamps['Weekday'] = temp.apply(lambda x: pd.to_datetime(x, errors = 'coerce').dayofweek)
-    df_time_stamps.dropna(subset=['Weekday'], inplace=True)
-    df_time_stamps['Weekday'] = df_time_stamps['Weekday'].apply(int)
-
-
-    df_time_stamps['Weekday Name'] = temp.apply(lambda x: pd.to_datetime(x, errors = 'coerce')).dt.day_name()
-
-    
-    return df_time_stamps
 
 
 def new_date_format(df_movie):
@@ -294,3 +272,23 @@ def box_month_plot(height, width, dictionary, months, f_h, f_w):
 
     plt.tight_layout()
     plt.show()
+
+
+def get_time_stamps_df(df):
+    df_time_stamps = df.copy(deep=True)
+
+    df_time_stamps.dropna(subset=['Month'], inplace=True)
+    temp = (df_time_stamps['Year'].astype(str) + '-' 
+                                                 + df_time_stamps['Month'].astype(str) + '-' 
+                                                 + df_time_stamps['Day'].astype(str))
+
+
+    df_time_stamps['Weekday'] = temp.apply(lambda x: pd.to_datetime(x, errors = 'coerce').dayofweek)
+    df_time_stamps.dropna(subset=['Weekday'], inplace=True)
+    df_time_stamps['Weekday'] = df_time_stamps['Weekday'].apply(int)
+
+
+    df_time_stamps['Weekday Name'] = temp.apply(lambda x: pd.to_datetime(x, errors = 'coerce')).dt.day_name()
+
+    
+    return df_time_stamps
