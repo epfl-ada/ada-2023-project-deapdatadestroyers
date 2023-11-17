@@ -28,10 +28,8 @@ KAGGLE_TITLE_IMDB = KAGGLE_IMDB_PATH+"/title.basics.tsv/data.tsv"
 KAGGLE_RATING_IMDB = KAGGLE_IMDB_PATH+"/title.ratings.tsv/data.tsv"
 #-----
 
-OSCAR_PATH = 'datasets/oscars_awards/'
+OSCAR_PATH = 'datasets/oscar_awards/'
 OSCAR_WINNER = OSCAR_PATH+"the_oscar_award.csv"
-
-
 
 
 
@@ -215,3 +213,30 @@ def load_oscar_winner():
     df_oscar_winner.dropna(subset=['Name'], inplace=True)
 
     return df_oscar_winner
+
+#convert year, month and day into date format and week number
+
+def new_date_format(df_movie):
+
+    df_movie_PCA = df_movie.dropna(subset=['Year', 'Month', 'Day'])
+    df_movie_PCA = df_movie_PCA.reset_index(drop=True)
+
+
+    df_movie_PCA['Release_Date'] = pd.to_datetime(df_movie_PCA[['Year', 'Month', 'Day']], errors='coerce')
+
+
+    df_movie_PCA['Week_Number'] = df_movie_PCA['Release_Date'].dt.strftime('%V')
+
+    
+    df_movie_PCA['Week_Number'] = pd.to_numeric(df_movie_PCA['Week_Number'], errors='coerce').astype('Int64')
+
+    return df_movie_PCA
+
+def normalize_matrix(main_variations, new_min=-1, new_max=1):
+   
+    row_mins = np.min(main_variations, axis=1, keepdims=True)
+    row_maxs = np.max(main_variations, axis=1, keepdims=True)
+
+    normalized_matrix = ((main_variations - row_mins) / (row_maxs - row_mins)) * (new_max - new_min) + new_min
+
+    return normalized_matrix
