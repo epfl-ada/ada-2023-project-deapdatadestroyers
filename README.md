@@ -2,7 +2,7 @@
 
 ***Abstract***
 
-We think that there are some correlations between a movie’s success and its release date within different time-frames and that the producers know it, and exploit it. There are some obvious trends that are common knowledge such as the blockbuster season but we would like to look at more specific, local and unexplained trends in movie releases. Our goal is to show how we are influenced by time in our perception of movies, and what are the strategies movie studios use to benefit from this bias or what they get wrong, whether it's expressed within a month, a year, a decade or a lifetime. This could then be useful data for studios on what to avoid and what to look for when choosing the release date of a movie. To this end, we need to ask ourselves a couple of questions. 
+We think that there are some correlations between a movie’s success (box office, oscars and rating) and its release date within different time-frames and that the producers know it, and exploit it. There are some obvious trends that are common knowledge such as the blockbuster season but we would like to look at more specific, local and unexplained trends in movie releases. Our goal is to show how we are influenced by time in our perception of movies, and what are the strategies movie studios use to benefit from this bias or what they get wrong, whether it's expressed within a month, a year, a decade or a lifetime. This could then be useful data for studios on what to avoid and what to look for when choosing the release date of a movie. To this end, we need to ask ourselves a couple of questions. 
 
 
 ## Research questions
