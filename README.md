@@ -62,3 +62,4 @@ Robin Patriarca: Data visualization and preprocessing
 
 ## Questions 
 
+We think just OLS and PCA is not technical enough. Should we use some other method, for example using neuraul network to predict the box office using the release month data?
