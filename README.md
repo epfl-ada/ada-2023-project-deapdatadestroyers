@@ -33,7 +33,13 @@ We think that there are some correlations between a movie’s success and its re
 
 Preprocessing: One obviously important component of our analysis is dates, so a big part of our preprocessing phase was converting our dates into other formats. We added to our original dataframe columns giving us information the release date’s day of the week, position in the year and week number. Having access to these new formats will facilitate further analysis.
 
-Ordinary least square
+Ordinary least square is a way to find the relationship between the dependent variables (i.e. Box office) and independent variables (dummies variables of the month). Here we use December as benchmark, that is only a constant term and dummies variable for January to November will be included in independent variables. 
+
+The following is function we use:
+$$Y = \beta_0 + \beta_1x_1 + \beta_2x_2 + ... + \beta_{11}x_{11}$$
+
+$Y$ = Box office \
+$X$ = Dummies variable of release month (Note: here we use December as bench mark)
 
 Principal components analysis is a dimensionality reduction and signal enhancement technique that will let us look at the most common variations within our dataset. Obvious trends in movie releases across the year are easy to observe and analyze, for example the summer blockbuster season. But smaller, localized and significant variations can be easy to miss. Here we’ll use PCA on the release dates and ratings of each year to spot these trends, how they change across genre, time and place, and how they can be explained. 
 
