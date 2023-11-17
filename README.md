@@ -38,7 +38,7 @@ Preprocessing: One obviously important component of our analysis is dates, so a 
 Ordinary least square is a way to find the relationship between the dependent variables (i.e. Box office) and independent variables (dummies variables of the month). Here we use December as benchmark, that is only a constant term and dummies variable for January to November will be included in independent variables. The following is function we use:
 $$Y = \beta_0 + \beta_1x_1 + \beta_2x_2 + ... + \beta_{11}x_{11}$$
 $Y$ = Box office \
-$x_1, x_2, ... x_{11}$ = Dummies variable of release month (if the movie was released on Feburary then $x_1 = 0, x_2 = 1, x_3 = 0, ... x_{11} = 0$) 
+$x_1, x_2, ... x_{11}$ = Dummies variable of release month (if the movie was released on Feburary then $x_1 = 0, x_2 = 1, x_3 = 0, ... x_{11} = 0$) \
 We run the regression for the whole data, different countries and different time interval. And we will try to add some independent variables to eliminate the effect of "confounder".
 
 
