@@ -241,9 +241,9 @@ def box_month_plot(height, width, dictionary, months, f_h, f_w):
         ax = axes[i]
         ax.bar(months, dictionary[name][0])
         if isinstance(name,int) or isinstance(name,np.int64) :
-            ax.set_title('coefficient of regression Monthly \n dummies variable to Box office w.r.t {}-{}'.format(name, name+20))
+            ax.set_title('coefficient of regression Box office on \n Monthly dummies variable w.r.t {}-{}'.format(name, name+20))
         else:
-            ax.set_title('coefficient of regression Monthly \n dummies variable to Box office w.r.t {}'.format(name))
+            ax.set_title('coefficient of regression Box office on \n Monthly dummies variable w.r.t {}'.format(name))
         ax.set_xticks(range(len(months)))
         ax.set_xticklabels(months, rotation=45)
         ax.set_ylabel('coefficient')
