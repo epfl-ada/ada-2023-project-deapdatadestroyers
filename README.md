@@ -41,7 +41,7 @@ The following is function we use:
 $$Y = \beta_0 + \beta_1x_1 + \beta_2x_2 + ... + \beta_{11}x_{11}$$
 
 $Y$ = Box office \
-$x_1, x_2, ... x_{11}$ = Dummies variable of release month (if the movie in January then x_1 = 1, x_2 = 0, x_{11} = 0) 
+$x_1, x_2, ... x_{11}$ = Dummies variable of release month (if the movie in January then $x_1 = 1, x_2 = 0, x_{11} = 0$) 
 
 
 ### PCA
