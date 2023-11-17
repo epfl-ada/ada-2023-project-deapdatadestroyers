@@ -6,6 +6,17 @@ import matplotlib.pyplot as plt
 import json
 
 def count_var(df, var, show_graph=True, show_chisquare=True):
+    """Plots the number of row (movies) for each category of a variable (Month, Weekday Name, Day, Year)
+
+    Args:
+        df (data frame): data frame
+        var (string): variable to plot
+        show_graph (bool, optional): show the graph. Defaults to True.
+        show_chisquare (bool, optional): show the chisquare statistic. Defaults to True.
+    
+    Returns:
+        var_values (array): number of movies for each category of the variable
+    """
     
     df_temp = df.copy(deep=True)
     df_temp.dropna(subset=[var],inplace=True)
@@ -41,6 +52,8 @@ def count_var(df, var, show_graph=True, show_chisquare=True):
     return var_values
 
 def count_var_normalized_genre(initial_df, genre_df, var, show_graph=True, show_chisquare=True):
+    """Plots the percentage of row (movies) for each category of a variable (Month, Weekday Name, Day, Year) for a specific genre
+    """
 
     df_genre_temp = genre_df.copy(deep=True)
     df_total_temp = initial_df.copy(deep=True)
@@ -84,6 +97,16 @@ def count_var_normalized_genre(initial_df, genre_df, var, show_graph=True, show_
 
 
 def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True):
+    """
+    Plots the average of a variable (Box office, Metascore, IMDB score) for each category of a variable (Month, Weekday Name, Day, Year)
+    
+    Args:
+        df (data frame): data frame
+        var (string): variable to plot
+        group (string): variable to group by
+        show_graph (bool, optional): show the graph. Defaults to True.
+        logscale (bool, optional): use logscale for the y-axis. Defaults to True.
+    """
     
     df_temp = df.copy(deep=True)
     df_temp.dropna(subset=[group, var],inplace=True)
@@ -102,9 +125,8 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
             order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
         if group == 'Day':
             order = np.linspace(1,31,31).astype(int)
-        # No boxplot for year for now, too much boxplot    
+        # No boxplot for year, too many boxes makes it unreadable   
         
-        # sbn.barplot(x=df_var, y=df_mean, order = order)
         sbn.boxplot(x=group, y=var, order = order, data=df)
         plt.title(f'{var} for movies by {group}')
         plt.xlabel('Day of the month')
@@ -125,9 +147,11 @@ def get_movies_country(df, country):
     df_temp = df_temp[df_temp['Countries (Freebase ID:name tuples)'].str.contains(country)==False]
     return df_temp
 
-#convert year, month and day into date format and week number
 
 def new_date_format(df_movie):
+    """
+    This function is to convert the year, month and day into date format and week number.
+    """
 
     df_movie_PCA = df_movie.dropna(subset=['Year', 'Month', 'Day'])
     df_movie_PCA = df_movie_PCA.reset_index(drop=True)
@@ -143,6 +167,8 @@ def new_date_format(df_movie):
 
     return df_movie_PCA
 
+
+
 def normalize_matrix(main_variations, new_min=-1, new_max=1):
    
     row_mins = np.min(main_variations, axis=1, keepdims=True)
@@ -152,6 +178,8 @@ def normalize_matrix(main_variations, new_min=-1, new_max=1):
 
     return normalized_matrix
 
+
+
 def get_genres(df):
     genres = dict()
     for i, element in enumerate(df['genres (Freebase ID:name tuples)']):
@@ -159,7 +187,6 @@ def get_genres(df):
         for v in t.items():
             if v[1] not in genres:
                 genres[v[1]] = 0
-                #print(genres)
             genres[v[1]] = genres[v[1]] + 1
     return genres
 
