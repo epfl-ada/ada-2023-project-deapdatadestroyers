@@ -139,7 +139,7 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
 
 def get_movies_genre(df, genre):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['genres (Freebase ID:name tuples)'].str.contains(genre)==True] 
+    df_temp = df_temp[df_temp['Genres'].str.contains(genre)==True] 
     return df_temp
 
 def get_movies_country(df, country, contains=True):
@@ -180,15 +180,15 @@ def normalize_matrix(main_variations, new_min=-1, new_max=1):
 
 
 
-def get_genres(df):
-    genres = dict()
-    for i, element in enumerate(df['genres (Freebase ID:name tuples)']):
-        t = json.loads(element)
-        for v in t.items():
-            if v[1] not in genres:
-                genres[v[1]] = 0
-            genres[v[1]] = genres[v[1]] + 1
-    return genres
+def get_values_column_of_list(df, var='Genres'):
+    values = dict()
+    for i, element in enumerate(df[var]):
+        for v in element:
+            if v not in values:
+                values[v] = 0
+            values[v] = values[v] + 1
+    return values
+
 
 
 def get_list_of_countries(df_series):
