@@ -111,7 +111,7 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
     df_temp = df.copy(deep=True)
     df_temp.dropna(subset=[group, var],inplace=True)
     
-    df_mean = df_temp.groupby(group).mean()[var].values
+    df_mean = df_temp.groupby(group)[var].mean().values
     df_var = list(df_temp.groupby(group).groups.keys())
 
     # Graph
@@ -139,12 +139,12 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
 
 def get_movies_genre(df, genre):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['Genres'].str.contains(genre)==True] 
+    df_temp = df_temp[df_temp['Genres'].apply(lambda x: genre in x)] 
     return df_temp
 
 def get_movies_country(df, country, contains=True):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['Countries (Freebase ID:name tuples)'].str.contains(country)==contains]
+    df_temp = df_temp[(df_temp['Countries'].apply(lambda x: country in x))==contains]
     return df_temp
 
 

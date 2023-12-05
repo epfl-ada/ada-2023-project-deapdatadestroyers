@@ -5,29 +5,26 @@ import time
 import numpy as np
 import pandas as pd
 
-def normalize(df, var):
-    return (df[var] - df[var].mean())/df[var].std()
-
 def get_columns(Name, df, col):
         out = df[df['Wikipedia ID']==Name][col].values[0]
         return out
 
+def normalize(df, var):
+    return (df[var] - df[var].mean())/df[var].std()
 
-# The dependent var is the variable we want to match on (1 or 0)
-def analyse(df, dependent_var, matching_vars, independent_var, row_id_index):
-    df_matching = df.copy(deep=True).dropna(subset=matching_vars + [dependent_var, independent_var])
+
+def analyse(df, dependent_var, matching_vars, independent_var, row_id_index, onehot_vars):
+    df_matching = df.copy(deep=True).dropna(subset=matching_vars + [dependent_var, independent_var] + onehot_vars)
   
     for v in matching_vars:
-        df_matching[v] = normalize(df_matching, v)
         df_matching[v] = df_matching[v].astype(float)
+        df_matching[v] = normalize(df_matching, v)
+        
+        
 
-
-
-
-    # First try without genres and countries
     
-    mod = smf.logit(formula=f'{dependent_var} ~  {" + ".join(matching_vars)}', data=df_matching)
-    res = mod.fit()
+    mod = smf.logit(formula=f'{dependent_var} ~  {" + ".join(matching_vars + onehot_vars)}', data=df_matching)
+    res = mod.fit(maxiter=100)
     df_matching['Propensity_score'] = res.predict()
 
     #display(df_matching)
@@ -81,9 +78,15 @@ def analyse(df, dependent_var, matching_vars, independent_var, row_id_index):
                             ) 
                             for u, v in filtered_edges.items()], 
                             columns=['Name_t', 'Name_c', col + ' u', col + ' v'])
+    
+    df_check_matched['matching_value'] = abs(df_check_matched['Propensity_score u']-df_check_matched['Propensity_score v'])
+    
+    df_check_matched = df_check_matched[df_check_matched['matching_value'] < 0.0001]
 
     # Create the simple dataframe with matched papers
     df_matched = df_check_matched[['Name_t', 'Name_c']]
+    
+    
 
     #display(df_check_matched)
 
@@ -99,10 +102,9 @@ def analyse(df, dependent_var, matching_vars, independent_var, row_id_index):
 
     paired_ttest = smf.ols(formula=f'{independent_var} ~ {dependent_var}', data=pd.concat([df_matched_treatment, 
                                                                                     df_matched_control])).fit()
-    print('Test for Box office ~ is_first_day')
+    print(f'Test for {independent_var} ~ {dependent_var}')
     print('')
     print(paired_ttest.summary())
     print('')
-
+    
     return df_matched_treatment, df_matched_control
-
