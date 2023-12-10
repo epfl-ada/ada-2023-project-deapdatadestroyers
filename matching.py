@@ -91,11 +91,17 @@ def analyse(df, dependent_var, matching_vars, independent_var, row_id_index, one
     #display(df_check_matched)
 
     #print(len(df_check_matched[df_check_matched['track u'] != df_check_matched['track v']]))
-    df_matched_treatment = df_matching[(df_matching[dependent_var] == 1) & 
-                                    (df_matching[row_id_index].isin(df_matched['Name_t']))]
+    #df_matched_treatment = df_matching[(df_matching[dependent_var] == 1) & 
+    #                                (df_matching[row_id_index].isin(df_matched['Name_t']))]
 
-    df_matched_control = df_matching[(df_matching[dependent_var] == 0) & 
-                                    (df_matching[row_id_index].isin(df_matched['Name_c']))]
+    #df_matched_control = df_matching[(df_matching[dependent_var] == 0) & 
+    #                                (df_matching[row_id_index].isin(df_matched['Name_c']))]
+
+    df_matched_treatment = df[(df[dependent_var] == 1) & 
+                                    (df[row_id_index].isin(df_matched['Name_t']))]
+
+    df_matched_control = df[(df[dependent_var] == 0) & 
+                                    (df[row_id_index].isin(df_matched['Name_c']))]
 
 
     #display(df_matched_treatment)
