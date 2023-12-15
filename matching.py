@@ -13,7 +13,7 @@ def normalize(df, var):
     return (df[var] - df[var].mean())/df[var].std()
 
 
-def analyse(df, dependent_var, matching_vars, independent_var, row_id_index, onehot_vars):
+def analyse(df, independent_var, matching_vars, dependent_var, row_id_index, onehot_vars, print_ols=False, print_effect=True):
     df_matching = df.copy(deep=True).dropna(subset=matching_vars + [dependent_var, independent_var] + onehot_vars)
   
     for v in matching_vars:
@@ -23,15 +23,15 @@ def analyse(df, dependent_var, matching_vars, independent_var, row_id_index, one
         
 
     
-    mod = smf.logit(formula=f'{dependent_var} ~  {" + ".join(matching_vars + onehot_vars)}', data=df_matching)
-    res = mod.fit(maxiter=100)
+    mod = smf.logit(formula=f'{independent_var} ~  {" + ".join(matching_vars + onehot_vars)}', data=df_matching)
+    res = mod.fit(maxiter=100, disp=False)
     df_matching['Propensity_score'] = res.predict()
 
     #display(df_matching)
 
     # We start by creating the two groups
-    treatment_group = df_matching[df_matching[dependent_var]==1]
-    control_group = df_matching[df_matching[dependent_var]==0]
+    treatment_group = df_matching[df_matching[independent_var]==1]
+    control_group = df_matching[df_matching[independent_var]==0]
 
     # We print the number of element in each group to check that their sum is 1538 and make sure that our matching has
     # the same size as the smallest of the two groups (sanity check)
@@ -59,7 +59,7 @@ def analyse(df, dependent_var, matching_vars, independent_var, row_id_index, one
         
     end = time.time()
 
-    print(f'Time : {end-start}')
+    #print(f'Time : {end-start}')
     # This function is to help us print the final dataframe (sanity check)
     
     col = 'Propensity_score'
@@ -97,20 +97,34 @@ def analyse(df, dependent_var, matching_vars, independent_var, row_id_index, one
     #df_matched_control = df_matching[(df_matching[dependent_var] == 0) & 
     #                                (df_matching[row_id_index].isin(df_matched['Name_c']))]
 
-    df_matched_treatment = df[(df[dependent_var] == 1) & 
+    df_matched_treatment = df[(df[independent_var] == 1) & 
                                     (df[row_id_index].isin(df_matched['Name_t']))]
 
-    df_matched_control = df[(df[dependent_var] == 0) & 
+    df_matched_control = df[(df[independent_var] == 0) & 
                                     (df[row_id_index].isin(df_matched['Name_c']))]
 
 
     #display(df_matched_treatment)
 
-    paired_ttest = smf.ols(formula=f'{independent_var} ~ {dependent_var}', data=pd.concat([df_matched_treatment, 
+    paired_ttest = smf.ols(formula=f'{dependent_var} ~ {independent_var}', data=pd.concat([df_matched_treatment, 
                                                                                     df_matched_control])).fit()
-    print(f'Test for {independent_var} ~ {dependent_var}')
-    print('')
-    print(paired_ttest.summary())
+
+    effect_sizes = paired_ttest.params[independent_var]
+    p_values = paired_ttest.pvalues[independent_var]
+    intercept = paired_ttest.params["Intercept"]
+    
+    print(f'Test for {dependent_var} ~ {independent_var}')
+    if print_ols:
+        print(paired_ttest.summary())
+    if print_effect:
+        print(f'The effect of {independent_var} is {effect_sizes} with a p-value of {p_values}')
+        print(f'The base effect is {intercept}')
     print('')
     
-    return df_matched_treatment, df_matched_control
+    return df_matched_treatment, df_matched_control, p_values, effect_sizes, intercept
+
+
+
+
+
+
