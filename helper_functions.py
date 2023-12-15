@@ -111,7 +111,7 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
     df_temp = df.copy(deep=True)
     df_temp.dropna(subset=[group, var],inplace=True)
     
-    df_mean = df_temp.groupby(group).mean()[var].values
+    df_mean = df_temp.groupby(group)[var].mean().values
     df_var = list(df_temp.groupby(group).groups.keys())
 
     # Graph
@@ -139,12 +139,12 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
 
 def get_movies_genre(df, genre):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['genres (Freebase ID:name tuples)'].str.contains(genre)==True] 
+    df_temp = df_temp[df_temp['Genres'].apply(lambda x: genre in x)] 
     return df_temp
 
 def get_movies_country(df, country, contains=True):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['Countries (Freebase ID:name tuples)'].str.contains(country)==contains]
+    df_temp = df_temp[(df_temp['Countries'].apply(lambda x: country in x))==contains]
     return df_temp
 
 
@@ -180,15 +180,15 @@ def normalize_matrix(main_variations, new_min=-1, new_max=1):
 
 
 
-def get_genres(df):
-    genres = dict()
-    for i, element in enumerate(df['genres (Freebase ID:name tuples)']):
-        t = json.loads(element)
-        for v in t.items():
-            if v[1] not in genres:
-                genres[v[1]] = 0
-            genres[v[1]] = genres[v[1]] + 1
-    return genres
+def get_values_column_of_list(df, var='Genres'):
+    values = dict()
+    for i, element in enumerate(df[var]):
+        for v in element:
+            if v not in values:
+                values[v] = 0
+            values[v] = values[v] + 1
+    return values
+
 
 
 def get_list_of_countries(df_series):
@@ -241,9 +241,9 @@ def box_month_plot(height, width, dictionary, months, f_h, f_w):
         ax = axes[i]
         ax.bar(months, dictionary[name][0])
         if isinstance(name,int) or isinstance(name,np.int64) :
-            ax.set_title('coefficient of regression Box office on \n Monthly dummies variable w.r.t {}-{}'.format(name, name+20))
+            ax.set_title('coefficient of regression Monthly \n dummies variable to Box office w.r.t {}-{}'.format(name, name+20))
         else:
-            ax.set_title('coefficient of regression Box office on \n Monthly dummies variable w.r.t {}'.format(name))
+            ax.set_title('coefficient of regression Monthly \n dummies variable to Box office w.r.t {}'.format(name))
         ax.set_xticks(range(len(months)))
         ax.set_xticklabels(months, rotation=45)
         ax.set_ylabel('coefficient')
