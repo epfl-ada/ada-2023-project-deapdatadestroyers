@@ -21,11 +21,21 @@ def analyse(df, independent_var, matching_vars, dependent_var, row_id_index, one
         df_matching[v] = normalize(df_matching, v)
         
         
-
+    print(len(df_matching[df_matching[independent_var]==1]), len(df_matching[df_matching[independent_var]==0]))
     
     mod = smf.logit(formula=f'{independent_var} ~  {" + ".join(matching_vars + onehot_vars)}', data=df_matching)
-    res = mod.fit(maxiter=100, disp=False)
-    df_matching['Propensity_score'] = res.predict()
+    control = df_matching[df_matching[independent_var]==0]
+    treatment = df_matching[df_matching[independent_var]==1]
+    try:
+        res = mod.fit(maxiter=100, disp=False)
+        df_matching['Propensity_score'] = res.predict()
+        assert(len(control)>0)
+        assert(len(treatment)>0)
+    except:
+        fake_effect_size = -control[dependent_var].mean() + treatment[dependent_var].mean()
+        return np.NaN, np.NaN, 1, fake_effect_size, np.NaN 
+    
+    
 
     #display(df_matching)
 
@@ -104,7 +114,14 @@ def analyse(df, independent_var, matching_vars, dependent_var, row_id_index, one
                                     (df[row_id_index].isin(df_matched['Name_c']))]
 
 
-    #display(df_matched_treatment)
+    try:
+        assert(len(df_matched_treatment) > 0)
+        assert(len(df_matched_control) > 0)
+    except:
+        control = df_matching[df_matching[independent_var]==0]
+        treatment = df_matching[df_matching[independent_var]==1]
+        fake_effect_size = -control[dependent_var].mean() + treatment[dependent_var].mean()
+        return np.NaN, np.NaN, 1, fake_effect_size, np.NaN
 
     paired_ttest = smf.ols(formula=f'{dependent_var} ~ {independent_var}', data=pd.concat([df_matched_treatment, 
                                                                                     df_matched_control])).fit()
