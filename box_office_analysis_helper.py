@@ -3,6 +3,8 @@ from matching import *
 import plotly.graph_objects as go
 import plotly.express as px
 from PIL import Image
+import math
+
 
 
 def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatter_dot_table_name, timetable, 
@@ -51,14 +53,15 @@ def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatt
 
 
 
-def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log=True):
+def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log=True, title = "yoyoyo"):
     fig = px.scatter(df_cluster_graph, x=x, y=y, #color=bubble_color, 
                          custom_data=hover_data, size=bubble_size)
 
-    fig.update_layout(width=800, height=500, title_font=dict(size=20), title = 'Movies Clustering',
+
+    fig.update_layout(width=800, height=500, title_font=dict(size=20), title = title,
                       font=dict(family='Arial', size=12),
-                      xaxis=dict(title='log Number of Movies', titlefont=dict(size=14)),
-                      yaxis=dict(title='Effect size', titlefont=dict(size=14)),
+                      xaxis=dict(title=x, titlefont=dict(size=14)),
+                      yaxis=dict(title=y, titlefont=dict(size=14)),
                       showlegend=True)
     for trace in fig.data:
             template = ''
@@ -69,26 +72,25 @@ def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_
                     template = template + '<br><b>' + str(data) + '</b>: %{customdata['+str(i)+']:,.2f}</br>'
                 
             trace.hovertemplate = (template + '<extra></extra>')
-    #
-
-    
-
-  
-
+ 
     return fig
 
 
 
 
 
-def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_name, hover_data, bubble_size, bubble_color, x, y, x_log=True):
+def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_name, hover_data, bubble_size, bubble_color, x, y, x_log=True, y_log=True, title='TMP title'):
 
     if x_log:
         df_cluster_graph['log ' + x] =df_cluster_graph[x].apply(lambda x: np.log(x))
         x = 'log ' + x
 
+    if y_log:
+        df_cluster_graph['log ' + y] =df_cluster_graph[y].apply(lambda x: np.log(x))
+        y = 'log ' + y
+
     if len(drop_down_table) == 0:
-        fig = create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log)
+        fig = create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log, title)
         return fig
     #create a scatter plot for each genre
     figs = []
@@ -99,7 +101,7 @@ def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_nam
         for trace in fig.data:
             template = ''
             for i, data in enumerate(hover_data):
-                if str(data)=='Country' or str(data) == 'Genre':
+                if str(data)=='Country' or str(data) == 'Genre' or str(data) == 'Weekday Name':
                     template = template + '<br><b>' + str(data) + '</b>: %{customdata['+str(i)+']}</br>'
                 else:
                     template = template + '<br><b>' + str(data) + '</b>: %{customdata['+str(i)+']:,.2f}</br>'
@@ -134,19 +136,72 @@ def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_nam
                 ),
             ],
         )
+
     
-    fig.update_layout(width=800, height=500, title_font=dict(size=20), title = 'Movies Clustering',
+    fig.update_layout(width=800, height=500, title_font=dict(size=20), title = title,
                       font=dict(family='Arial', size=12),
-                      xaxis=dict(title='log Number of Movies', titlefont=dict(size=14)),
-                      yaxis=dict(title='Effect size', titlefont=dict(size=14)),
+                      xaxis=dict(title=x, titlefont=dict(size=14)),
+                      yaxis=dict(title=y, titlefont=dict(size=14)),
                       showlegend=True)
     
     
-    fig.show(config={'displayModeBar': False})
+    #fig.show(config={'displayModeBar': False})
 
     return fig
 
     #fig.write_html("../project-website/_includes/kmeans_per_genre.html", config={'displayModeBar': False})
+
+def fig_with_flags(fig, df, size, x, y, x_log = True, y_log=True):
+
+    fig.update_traces(marker_color="rgba(0,0,0,0)")
+                      
+    if x_log:
+        df[x] = df[x].apply(lambda x: np.log(x))
+    if y_log:
+        df[y] = df[y].apply(lambda x: np.log(x))
+        
+    
+    for i, row in df.iterrows():
+        country = row['Country']
+        code = COUNTRY_CODE[country][:2]
+        if math.isnan(row['p_value']):
+            p_value = 1
+        else:
+            p_value = row['p_value']
+        
+        #get the image dimensions
+        image_size = np.sqrt(row[size] / df[size].max())*20
+        
+        if y_log or x_log:
+            image_size = np.log(image_size)
+
+       
+        #add the main image
+        fig.add_layout_image(
+            dict(
+                source=Image.open(f"round_flags/flags/64/{code}.png"),
+                xref="x",
+                yref="y",
+                xanchor="center",
+                yanchor="middle",
+                x=row[x],
+                y=row[y],
+                opacity= (1-p_value) if p_value < 0.05 else min(1-p_value + 0.2, 0.5),
+                layer="above",
+                sizex=image_size,
+                sizey=image_size,
+                
+            )
+        )
+
+    fig.update_layout({'plot_bgcolor': 'rgba(255, 255, 255, 1)'})
+
+    fig.show(config={'displayModeBar': False})
+
+    return fig
+
+
+
 
 COUNTRY_CODE = {
     "Hong Kong": "HK",
