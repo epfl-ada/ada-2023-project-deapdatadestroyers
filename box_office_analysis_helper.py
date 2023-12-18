@@ -70,7 +70,8 @@ def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_
                     template = template + '<br><b>' + str(data) + '</b>: %{customdata['+str(i)+']}</br>'
                 else:
                     template = template + '<br><b>' + str(data) + '</b>: %{customdata['+str(i)+']:,.2f}</br>'
-                
+                if i == 0:
+                    template = template[:-5] + ' (= bubble size)' + template[-5:]  
             trace.hovertemplate = (template + '<extra></extra>')
  
     return fig
@@ -105,7 +106,8 @@ def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_nam
                     template = template + '<br><b>' + str(data) + '</b>: %{customdata['+str(i)+']}</br>'
                 else:
                     template = template + '<br><b>' + str(data) + '</b>: %{customdata['+str(i)+']:,.2f}</br>'
-                
+                if i == 0:
+                    template = template[:-5] + ' (= bubble size)' + template[-5:]  
             trace.hovertemplate = (template + '<extra></extra>')
         figs.append(fig)
     
