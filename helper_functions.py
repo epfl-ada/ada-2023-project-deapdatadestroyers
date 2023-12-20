@@ -505,3 +505,27 @@ COUNTRY_CODE = {
     "Zambia": "ZMB",
     "Zimbabwe": "ZWE"
 }
+
+def control_repartition(control_var, df_treatment, df_control):
+    for var in control_var:
+        df_treatment_var = df_treatment.copy(deep=True).dropna(subset=var)
+        df_control_var = df_control.copy(deep=True).dropna(subset=var)
+        e1 = df_control_var[var].mean()
+        e2 = df_treatment_var[var].mean()
+        var1 = df_control_var[var].var()
+        var2 = df_treatment_var[var].var()
+        
+        SMD = abs(e1-e2)/(np.sqrt(var1 + var2))
+
+        if SMD >= 0.1:
+            print(f"Careful, not a good balance for {var} because SMD = {SMD} (>0.1)")
+        else:
+            print(f"Good balance for {var} because SMD = {SMD} (<0.1)")
+            
+def add_dummies(df, var, top_dummies):
+    df_dummies = df.copy(deep=True)
+
+    for value in top_dummies:
+        df_dummies[str(value).replace(' ', '_').replace('-','_') + '_onehot'] = df_dummies[var].apply(lambda x: 1 if value in x else 0)
+    #df_dummies.drop(labels=var, axis=1, inplace=True)
+    return df_dummies
