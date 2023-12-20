@@ -8,26 +8,49 @@ import math
 
 
 def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatter_dot_table_name, timetable, 
-                                        timetable_name, dependent_var, matching_vars,  onehot_vars):
+                                        timetable_name, dependent_var, matching_vars,  onehot_vars, control_variables = ['budget']):
 
     # Exploding for genres and making linear regression for each genre
     for i, item in enumerate(scatter_dot_table):
         for j, timeframe in enumerate(timetable):
 
             if scatter_dot_table_name == 'Country':
-                df_country = get_movies_country(df_time_stamps, item)
+                df = get_movies_country(df_time_stamps, item)
             elif scatter_dot_table_name == 'Genre':
-                df_country = get_movies_genre(df_time_stamps, item)
+                df = get_movies_genre(df_time_stamps, item)
+            elif scatter_dot_table_name == 'Month Name':
+                df = df_time_stamps[df_time_stamps['Month Name']==item]
+            else:
+                df = df_time_stamps
     
-            df_country['is_timeframe'] = (df_country[timetable_name] == timeframe).astype(int)
-            df_country_time_frame = df_country[df_country['is_timeframe']==1]
+            df['is_timeframe'] = (df[timetable_name] == timeframe).astype(int)
+            df_time_frame = df[df['is_timeframe']==1]
             print(timeframe, j)
-            #display(df_country)
+            #display(df)
     
             print(f"For {item}")
         
             (df_matched_treatement, df_matched_control, 
-             p_values, effect_sizes, intercept) = analyse(df_country, 'is_timeframe', matching_vars, dependent_var, 'Wikipedia ID', onehot_vars)
+             p_values, effect_sizes, intercept) = analyse(df, 'is_timeframe', matching_vars, dependent_var, 'Wikipedia ID', onehot_vars)
+
+            for var in control_variables:
+                df_matched_treatement_NAdropped = df_matched_treatement.copy(deep=True).dropna(subset=var)
+                df_matched_control_NAdropped = df_matched_control.copy(deep=True).dropna(subset=var)
+                e1 = df_matched_control_NAdropped[var].mean()
+                e2 = df_matched_treatement_NAdropped[var].mean()
+                var1 = df_matched_control_NAdropped[var].var()
+                var2 = df_matched_treatement_NAdropped[var].var()
+                
+                SMD = abs(e1-e2)/(np.sqrt(var1 + var2))
+                if SMD >= 0.1:
+                    print()
+                    print("!!!!!!")
+                    print(f'Carefull, {var} is not balanced because SMD = {SMD} (> 0.1)')
+                    print("!!!!!!")
+                    print()
+
+
+
             if effect_sizes == np.NaN:
                 abs_effect_size = np.NaN
             else:
@@ -35,10 +58,10 @@ def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatt
             
             if (i, j) == (0, 0):
                 data = []
-            mean_value = df_country_time_frame[dependent_var].mean()
+            mean_value = df_time_frame[dependent_var].mean()
             if pd.isnull(mean_value):
                 mean_value = 0
-            data.append([item, timeframe,mean_value , df_country['is_timeframe'].sum(), 
+            data.append([item, timeframe,mean_value , df['is_timeframe'].sum(), 
                          p_values, effect_sizes, abs_effect_size, intercept])
             
     
@@ -53,8 +76,8 @@ def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatt
 
 
 
-def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log=True, title = "yoyoyo"):
-    fig = px.scatter(df_cluster_graph, x=x, y=y, #color=bubble_color, 
+def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log=True, title = "yoyoyo", show_legend = False):
+    fig = px.scatter(df_cluster_graph, x=x, y=y, color=bubble_color, 
                          custom_data=hover_data, size=bubble_size)
 
 
@@ -62,7 +85,7 @@ def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_
                       font=dict(family='Arial', size=12),
                       xaxis=dict(title=x, titlefont=dict(size=14)),
                       yaxis=dict(title=y, titlefont=dict(size=14)),
-                      showlegend=True)
+                      showlegend=show_legend)
     for trace in fig.data:
             template = ''
             for i, data in enumerate(hover_data):
@@ -80,7 +103,7 @@ def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_
 
 
 
-def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_name, hover_data, bubble_size, bubble_color, x, y, x_log=True, y_log=True, title='TMP title'):
+def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_name, hover_data, bubble_size, bubble_color, x, y, x_log=True, y_log=True, title='TMP title', show_legend=True):
 
     if x_log:
         df_cluster_graph['log ' + x] =df_cluster_graph[x].apply(lambda x: np.log(x))
@@ -91,7 +114,7 @@ def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_nam
         y = 'log ' + y
 
     if len(drop_down_table) == 0:
-        fig = create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log, title)
+        fig = create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log, title, show_legend)
         return fig
     #create a scatter plot for each genre
     figs = []
@@ -144,7 +167,7 @@ def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_nam
                       font=dict(family='Arial', size=12),
                       xaxis=dict(title=x, titlefont=dict(size=14)),
                       yaxis=dict(title=y, titlefont=dict(size=14)),
-                      showlegend=True)
+                      showlegend=show_legend)
     
     
     #fig.show(config={'displayModeBar': False})
