@@ -56,4 +56,8 @@ Florian Delavy : Genres analysis \
 Leo Sperber : Principal component analysis \
 Robin Patriarca: Data visualization and preprocessing
 
-
+## Contributions
+Haoyu Wen : Ordinary least square, Best Release date analysis, Part of Box office Causal analysis \
+Florian Delavy : Genres analysis and notebooks merging \
+Leo Sperber : Principal component analysis \
+Robin Patriarca: Data visualization and preprocessing
