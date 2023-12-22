@@ -55,11 +55,11 @@ Note: have meeting with the superviser each week.
 
 Haoyu Wen : Ordinary least square \
 Florian Delavy : Genres analysis \
-Leo Sperber : Website, data story, world map and PCA \
+Leo Sperber : Principal component analysis \
 Robin Patriarca: Data visualization and preprocessing
 
 ## Contributions
 Haoyu Wen : Best Release date analysis, Part of Box office Causal analysis \
 Florian Delavy : Genres analysis and notebooks merging \
-Leo Sperber : Principal component analysis \
+Leo Sperber : Website, data story, world map and PCA \
 Robin Patriarca: Oscar Analysis + causal box office analysis (and corresponding visualizations)
