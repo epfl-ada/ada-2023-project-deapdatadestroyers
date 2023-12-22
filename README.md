@@ -1,6 +1,6 @@
 # Movies in time
 
-Remark : the Jupyter notebook was too large to be visualized in github. Use github dev environment to see it (when you try to visualize it and it says too big, click on the top right drop down and pick github.dev
+*Remark : the Jupyter notebook was too large to be visualized in github. Use github dev environment to see it (when you try to visualize it and it says too big, click on the top right drop down and pick github.dev*
 
 ***Abstract***
 
