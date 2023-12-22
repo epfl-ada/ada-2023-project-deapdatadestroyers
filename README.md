@@ -33,6 +33,8 @@ Preprocessing: One obviously important component of our analysis is dates, so a 
 ### OLS
 Ordinary least square is a way to find the relationship between the dependent variables (i.e. Box office) and independent variables (i.e. dummies variables of the month). Here, we use December as a benchmark; in other words, only a constant term and dummy variable for January to November will be included in the independent variables. We run the regression for the whole data, on different countries and different time intervals. We will monitor the t-values of the coefficients and R-square of each regression. And we will try to add some independent variables to eliminate the effect of "confounder".
 
+### Matching OLS
+To do deeper research on Box office Causal analysis, we use "matching OLS". We will make an example to clarify the method we use. Suppose we research the data for the US in January. Firstly, we will get the data only for the US and split it into two groups. One is in January (control group), and the treatment group is for all other months except January. Then, we match the control and treatment groups on all relevant covariates to have them be the same size. Finally, we will do the regression below. Note that most countries will not have enough movies in our dataset to conduct this matching and get some statistically significant results. Despite this, those countries are still interesting to visualize.
 
 
 ### PCA
