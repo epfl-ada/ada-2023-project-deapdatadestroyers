@@ -529,3 +529,39 @@ def add_dummies(df, var, top_dummies):
         df_dummies[str(value).replace(' ', '_').replace('-','_') + '_onehot'] = df_dummies[var].apply(lambda x: 1 if value in x else 0)
     #df_dummies.drop(labels=var, axis=1, inplace=True)
     return df_dummies
+
+def regress_coefficient_month_html(df, country, genre):
+    
+    start_year = df['Year'].unique().min()
+    end_year = df['Year'].unique().max()
+    year_interval = 3
+    years_list = [year for year in range(start_year+year_interval, end_year+4, year_interval)]
+    
+    # create month
+    months = list(calendar.month_name)[1:]
+    months = months[:-1]
+    months.insert(0, 'const')
+    months_list = ['const']+['Month_{}'.format(i) for i in range(1, 12)]
+    
+    # regression country selected
+    if country != "All 87 countries":
+        df_aux = df [df ['Countries (Freebase ID:name tuples)'].str.contains(country)]
+        
+    # regression genre selected
+    if genre != "All genre":
+        df_aux  = df [df ['Genre'].str.contains(genre)]
+    
+    # Initialize an empty DataFrame to store coefficients and years
+    result_df = pd.DataFrame(columns=['Year'] + ['const']+[f'Month_{i}' for i in range(1, 12)])
+    
+    for year in years_list:
+        # regression year selected
+
+        df_aux = df[(df['Year'] >= start_year) & (df['Year'] <= year)]
+        model = sm.OLS(df_aux['Box office'].values, df_aux[months_list]).fit()
+        
+        # Append the results to the DataFrame
+        result_df = result_df.append({'Year': year, **dict(zip(result_df.columns[1:], zip(model.params,model.bse))),'country':country}, ignore_index=True)
+        #result_df_2 = result_df.append({'Year': year, **dict(zip(result_df.columns[1:],model.bse)),'country':country}, ignore_index=True)
+       
+    return result_df
