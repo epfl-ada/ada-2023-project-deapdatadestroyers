@@ -38,8 +38,6 @@ week 3. get feedback from milestone 2 and precise our research questions. \
 week 4. devolpe the website and finalize the analysis. \
 week 5. cleanup of the jupyter notebook, finish website and readme.
 
-Note: have meeting with the superviser each week.
-
 
 ## Contributions
 Haoyu Wen : Best Release date analysis, Part of Box office Causal analysis \
