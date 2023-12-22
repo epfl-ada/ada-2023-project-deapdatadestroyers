@@ -1,0 +1,6 @@
+.ipynb_checkpoints/
+__pycache__/
+datasets/
+round_flags/
+country-flags/
+.DS_Store

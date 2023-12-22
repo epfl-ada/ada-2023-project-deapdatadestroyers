@@ -111,7 +111,7 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
     df_temp = df.copy(deep=True)
     df_temp.dropna(subset=[group, var],inplace=True)
     
-    df_mean = df_temp.groupby(group).mean()[var].values
+    df_mean = df_temp.groupby(group)[var].mean().values
     df_var = list(df_temp.groupby(group).groups.keys())
 
     # Graph
@@ -139,12 +139,12 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
 
 def get_movies_genre(df, genre):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['genres (Freebase ID:name tuples)'].str.contains(genre)==True] 
+    df_temp = df_temp[df_temp['Genres'].apply(lambda x: genre in x)] 
     return df_temp
 
 def get_movies_country(df, country, contains=True):
     df_temp = df.copy(deep=True)
-    df_temp = df_temp[df_temp['Countries (Freebase ID:name tuples)'].str.contains(country)==contains]
+    df_temp = df_temp[(df_temp['Countries'].apply(lambda x: country in x))==contains]
     return df_temp
 
 
@@ -180,15 +180,15 @@ def normalize_matrix(main_variations, new_min=-1, new_max=1):
 
 
 
-def get_genres(df):
-    genres = dict()
-    for i, element in enumerate(df['genres (Freebase ID:name tuples)']):
-        t = json.loads(element)
-        for v in t.items():
-            if v[1] not in genres:
-                genres[v[1]] = 0
-            genres[v[1]] = genres[v[1]] + 1
-    return genres
+def get_values_column_of_list(df, var='Genres'):
+    values = dict()
+    for i, element in enumerate(df[var]):
+        for v in element:
+            if v not in values:
+                values[v] = 0
+            values[v] = values[v] + 1
+    return values
+
 
 
 def get_list_of_countries(df_series):
@@ -241,9 +241,9 @@ def box_month_plot(height, width, dictionary, months, f_h, f_w):
         ax = axes[i]
         ax.bar(months, dictionary[name][0])
         if isinstance(name,int) or isinstance(name,np.int64) :
-            ax.set_title('coefficient of regression Box office on \n Monthly dummies variable w.r.t {}-{}'.format(name, name+20))
+            ax.set_title('coefficient of regression Monthly \n dummies variable to Box office w.r.t {}-{}'.format(name, name+20))
         else:
-            ax.set_title('coefficient of regression Box office on \n Monthly dummies variable w.r.t {}'.format(name))
+            ax.set_title('coefficient of regression Monthly \n dummies variable to Box office w.r.t {}'.format(name))
         ax.set_xticks(range(len(months)))
         ax.set_xticklabels(months, rotation=45)
         ax.set_ylabel('coefficient')
@@ -292,3 +292,276 @@ def get_time_stamps_df(df):
 
     
     return df_time_stamps
+
+
+def extract_country_name(country_string):
+    try:
+        # Find the position of ": " and the position of the second key
+        middle_index = country_string.find(',')
+        start_index = country_string.find(': "') + 3
+        end_index = country_string.find('"', start_index, middle_index)
+
+        # Extract the substring between ": " and the second key
+        country_name = country_string[start_index:end_index]
+
+        return country_name
+    except Exception as e:
+        return "Unknown"
+    
+    
+COUNTRY_CODE = {
+    "Afghanistan": "AFG",
+    "Albania": "ALB",
+    "Algeria": "DZA",
+    "Andorra": "AND",
+    "Angola": "AGO",
+    "Antigua and Barbuda": "ATG",
+    "Argentina": "ARG",
+    "Armenia": "ARM",
+    "Australia": "AUS",
+    "Austria": "AUT",
+    "Azerbaijan": "AZE",
+    "Bahamas": "BHS",
+    "Bahrain": "BHR",
+    "Bangladesh": "BGD",
+    "Barbados": "BRB",
+    "Belarus": "BLR",
+    "Belgium": "BEL",
+    "Belize": "BLZ",
+    "Benin": "BEN",
+    "Bhutan": "BTN",
+    "Bolivia": "BOL",
+    "Bosnia and Herzegovina": "BIH",
+    "Botswana": "BWA",
+    "Brazil": "BRA",
+    "Brunei": "BRN",
+    "Bulgaria": "BGR",
+    "Burkina Faso": "BFA",
+    "Burundi": "BDI",
+    "Cabo Verde": "CPV",
+    "Cambodia": "KHM",
+    "Cameroon": "CMR",
+    "Canada": "CAN",
+    "Central African Republic": "CAF",
+    "Chad": "TCD",
+    "Chile": "CHL",
+    "China": "CHN",
+    "Colombia": "COL",
+    "Comoros": "COM",
+    "Congo": "COG",
+    "Costa Rica": "CRI",
+    "Croatia": "HRV",
+    "Cuba": "CUB",
+    "Cyprus": "CYP",
+    "Czechia": "CZE",
+    "Denmark": "DNK",
+    "Djibouti": "DJI",
+    "Dominica": "DMA",
+    "Dominican Republic": "DOM",
+    "Ecuador": "ECU",
+    "Egypt": "EGY",
+    "El Salvador": "SLV",
+    "Equatorial Guinea": "GNQ",
+    "Eritrea": "ERI",
+    "Estonia": "EST",
+    "Eswatini": "SWZ",
+    "Ethiopia": "ETH",
+    "Fiji": "FJI",
+    "Finland": "FIN",
+    "France": "FRA",
+    "Gabon": "GAB",
+    "Gambia": "GMB",
+    "Georgia": "GEO",
+    "Germany": "DEU",
+    "Ghana": "GHA",
+    "Greece": "GRC",
+    "Grenada": "GRD",
+    "Guatemala": "GTM",
+    "Guinea": "GIN",
+    "Guinea-Bissau": "GNB",
+    "Guyana": "GUY",
+    "Haiti": "HTI",
+    "Honduras": "HND",
+    "Hungary": "HUN",
+    "Iceland": "ISL",
+    "India": "IND",
+    "Indonesia": "IDN",
+    "Iran": "IRN",
+    "Iraq": "IRQ",
+    "Ireland": "IRL",
+    "Israel": "ISR",
+    "Italy": "ITA",
+    "Jamaica": "JAM",
+    "Japan": "JPN",
+    "Jordan": "JOR",
+    "Kazakhstan": "KAZ",
+    "Kenya": "KEN",
+    "Kiribati": "KIR",
+    "Korea, North": "PRK",
+    "Korea, South": "KOR",
+    "Kosovo": "XKX",
+    "Kuwait": "KWT",
+    "Kyrgyzstan": "KGZ",
+    "Laos": "LAO",
+    "Latvia": "LVA",
+    "Lebanon": "LBN",
+    "Lesotho": "LSO",
+    "Liberia": "LBR",
+    "Libya": "LBY",
+    "Liechtenstein": "LIE",
+    "Lithuania": "LTU",
+    "Luxembourg": "LUX",
+    "Madagascar": "MDG",
+    "Malawi": "MWI",
+    "Malaysia": "MYS",
+    "Maldives": "MDV",
+    "Mali": "MLI",
+    "Malta": "MLT",
+    "Marshall Islands": "MHL",
+    "Mauritania": "MRT",
+    "Mauritius": "MUS",
+    "Mexico": "MEX",
+    "Micronesia": "FSM",
+    "Moldova": "MDA",
+    "Monaco": "MCO",
+    "Mongolia": "MNG",
+    "Montenegro": "MNE",
+    "Morocco": "MAR",
+    "Mozambique": "MOZ",
+    "Myanmar": "MMR",
+    "Namibia": "NAM",
+    "Nauru": "NRU",
+    "Nepal": "NPL",
+    "Netherlands": "NLD",
+    "New Zealand": "NZL",
+    "Nicaragua": "NIC",
+    "Niger": "NER",
+    "Nigeria": "NGA",
+    "North Macedonia": "MKD",
+    "Norway": "NOR",
+    "Oman": "OMN",
+    "Pakistan": "PAK",
+    "Palau": "PLW",
+    "Panama": "PAN",
+    "Papua New Guinea": "PNG",
+    "Paraguay": "PRY",
+    "Peru": "PER",
+    "Philippines": "PHL",
+    "Poland": "POL",
+    "Portugal": "PRT",
+    "Qatar": "QAT",
+    "Romania": "ROU",
+    "Russia": "RUS",
+    "Rwanda": "RWA",
+    "Saint Kitts and Nevis": "KNA",
+    "Saint Lucia": "LCA",
+    "Saint Vincent and the Grenadines": "VCT",
+    "Samoa": "WSM",
+    "San Marino": "SMR",
+    "Sao Tome and Principe": "STP",
+    "Saudi Arabia": "SAU",
+    "Senegal": "SEN",
+    "Serbia": "SRB",
+    "Seychelles": "SYC",
+    "Sierra Leone": "SLE",
+    "Singapore": "SGP",
+    "Slovakia": "SVK",
+    "Slovenia": "SVN",
+    "Solomon Islands": "SLB",
+    "Somalia": "SOM",
+    "South Africa": "ZAF",
+    "South Sudan": "SSD",
+    "Spain": "ESP",
+    "Sri Lanka": "LKA",
+    "Sudan": "SDN",
+    "Suriname": "SUR",
+    "Sweden": "SWE",
+    "Switzerland": "CHE",
+    "Syria": "SYR",
+    "Taiwan": "TWN",
+    "Tajikistan": "TJK",
+    "Tanzania": "TZA",
+    "Thailand": "THA",
+    "Timor-Leste": "TLS",
+    "Togo": "TGO",
+    "Tonga": "TON",
+    "Trinidad and Tobago": "TTO",
+    "Tunisia": "TUN",
+    "Turkey": "TUR",
+    "Turkmenistan": "TKM",
+    "Tuvalu": "TUV",
+    "Uganda": "UGA",
+    "Ukraine": "UKR",
+    "United Arab Emirates": "ARE",
+    "United Kingdom": "GBR",
+    "United States of America": "USA",
+    "Uruguay": "URY",
+    "Uzbekistan": "UZB",
+    "Vanuatu": "VUT",
+    "Vatican City": "VAT",
+    "Venezuela": "VEN",
+    "Vietnam": "VNM",
+    "Yemen": "YEM",
+    "Zambia": "ZMB",
+    "Zimbabwe": "ZWE"
+}
+
+def control_repartition(control_var, df_treatment, df_control):
+    for var in control_var:
+        df_treatment_var = df_treatment.copy(deep=True).dropna(subset=var)
+        df_control_var = df_control.copy(deep=True).dropna(subset=var)
+        e1 = df_control_var[var].mean()
+        e2 = df_treatment_var[var].mean()
+        var1 = df_control_var[var].var()
+        var2 = df_treatment_var[var].var()
+        
+        SMD = abs(e1-e2)/(np.sqrt(var1 + var2))
+
+        if SMD >= 0.1:
+            print(f"Careful, not a good balance for {var} because SMD = {SMD} (>0.1)")
+        else:
+            print(f"Good balance for {var} because SMD = {SMD} (<0.1)")
+            
+def add_dummies(df, var, top_dummies):
+    df_dummies = df.copy(deep=True)
+
+    for value in top_dummies:
+        df_dummies[str(value).replace(' ', '_').replace('-','_') + '_onehot'] = df_dummies[var].apply(lambda x: 1 if value in x else 0)
+    #df_dummies.drop(labels=var, axis=1, inplace=True)
+    return df_dummies
+
+def regress_coefficient_month_html(df, country, genre):
+    
+    start_year = df['Year'].unique().min()
+    end_year = df['Year'].unique().max()
+    year_interval = 3
+    years_list = [year for year in range(start_year+year_interval, end_year+4, year_interval)]
+    
+    # create month
+    months = list(calendar.month_name)[1:]
+    months = months[:-1]
+    months.insert(0, 'const')
+    months_list = ['const']+['Month_{}'.format(i) for i in range(1, 12)]
+    
+    # regression country selected
+    if country != "All 87 countries":
+        df_aux = df [df ['Countries (Freebase ID:name tuples)'].str.contains(country)]
+        
+    # regression genre selected
+    if genre != "All genre":
+        df_aux  = df [df ['Genre'].str.contains(genre)]
+    
+    # Initialize an empty DataFrame to store coefficients and years
+    result_df = pd.DataFrame(columns=['Year'] + ['const']+[f'Month_{i}' for i in range(1, 12)])
+    
+    for year in years_list:
+        # regression year selected
+
+        df_aux = df[(df['Year'] >= start_year) & (df['Year'] <= year)]
+        model = sm.OLS(df_aux['Box office'].values, df_aux[months_list]).fit()
+        
+        # Append the results to the DataFrame
+        result_df = result_df.append({'Year': year, **dict(zip(result_df.columns[1:], zip(model.params,model.bse))),'country':country}, ignore_index=True)
+        #result_df_2 = result_df.append({'Year': year, **dict(zip(result_df.columns[1:],model.bse)),'country':country}, ignore_index=True)
+       
+    return result_df
