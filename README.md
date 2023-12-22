@@ -55,7 +55,7 @@ Note: have meeting with the superviser each week.
 
 Haoyu Wen : Ordinary least square \
 Florian Delavy : Genres analysis \
-Leo Sperber : Principal component analysis \
+Leo Sperber : Website, data story, world map and PCA \
 Robin Patriarca: Data visualization and preprocessing
 
 ## Contributions
