@@ -114,8 +114,6 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
     df_mean = df_temp.groupby(group)[var].mean().values
     df_var = list(df_temp.groupby(group).groups.keys())
 
-    # Graph
-    
     if show_graph:
         sbn.set(rc={'figure.figsize':(10,4)})
         order=None
@@ -125,7 +123,7 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
             order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
         if group == 'Day':
             order = np.linspace(1,31,31).astype(int)
-        # No boxplot for year, too many boxes makes it unreadable   
+        #no boxplot for year, too many boxes makes it unreadable   
         
         sbn.boxplot(x=group, y=var, order = order, data=df)
         plt.title(f'{var} for movies by {group}')
@@ -138,19 +136,22 @@ def avg_var(df, var='Box office', group='Month', show_graph=True, logscale=True)
     return df_mean
 
 def get_movies_genre(df, genre):
+    """Outputs all movies of a certain genre
+    """
     df_temp = df.copy(deep=True)
     df_temp = df_temp[df_temp['Genres'].apply(lambda x: genre in x)] 
     return df_temp
 
 def get_movies_country(df, country, contains=True):
+    """Outputs all movies from a certain country
+    """
     df_temp = df.copy(deep=True)
     df_temp = df_temp[(df_temp['Countries'].apply(lambda x: country in x))==contains]
     return df_temp
 
 
 def new_date_format(df_movie):
-    """
-    This function is to convert the year, month and day into date format and week number.
+    """This function converts the year, month and day into date format and week number.
     """
 
     df_movie_PCA = df_movie.dropna(subset=['Year', 'Month', 'Day'])
@@ -170,7 +171,9 @@ def new_date_format(df_movie):
 
 
 def normalize_matrix(main_variations, new_min=-1, new_max=1):
-   
+    """Simple matrix value min-maxing normalization
+    """
+    
     row_mins = np.min(main_variations, axis=1, keepdims=True)
     row_maxs = np.max(main_variations, axis=1, keepdims=True)
 
@@ -273,8 +276,9 @@ def box_month_plot(height, width, dictionary, months, f_h, f_w):
     plt.tight_layout()
     plt.show()
 
-
 def get_time_stamps_df(df):
+    """Getting the week day release of movies from their release date
+    """
     df_time_stamps = df.copy(deep=True)
 
     df_time_stamps.dropna(subset=['Month'], inplace=True)
@@ -293,22 +297,23 @@ def get_time_stamps_df(df):
     
     return df_time_stamps
 
-
 def extract_country_name(country_string):
+    """Extracts the country name getting rid of the preceeding code
+    """
     try:
-        # Find the position of ": " and the position of the second key
+        #find the position of ": " and the position of the second key
         middle_index = country_string.find(',')
         start_index = country_string.find(': "') + 3
         end_index = country_string.find('"', start_index, middle_index)
 
-        # Extract the substring between ": " and the second key
+        #extract the substring between ": " and the second key
         country_name = country_string[start_index:end_index]
 
         return country_name
     except Exception as e:
         return "Unknown"
     
-    
+#country iso_alpha3_code format table used for interactive map geometries
 COUNTRY_CODE = {
     "Afghanistan": "AFG",
     "Albania": "ALB",
@@ -507,6 +512,17 @@ COUNTRY_CODE = {
 }
 
 def control_repartition(control_var, df_treatment, df_control):
+    """
+    Evaluate and print the balance of variable distributions between treatment and control groups.
+    
+    Args:
+        control_var: variables to assess balance on
+        df_treatment: df representing the treatment group
+        df_control: df representing the control group
+
+    Returns:
+    Prints balance
+    """
     for var in control_var:
         df_treatment_var = df_treatment.copy(deep=True).dropna(subset=var)
         df_control_var = df_control.copy(deep=True).dropna(subset=var)
@@ -522,36 +538,49 @@ def control_repartition(control_var, df_treatment, df_control):
         else:
             print(f"Good balance for {var} because SMD = {SMD} (<0.1)")
             
+            
 def add_dummies(df, var, top_dummies):
+    """
+    Add dummy one-hot encoded variables for matching based on specified top dummy values.
+    
+    Args:
+        df: input df
+        var: variable for which dummy variables are created
+        top_dummies: values to consider for one-hot encoding
+
+    Returns:
+        df_dummies: df with added dummy one-hot encoded variables.
+    """
     df_dummies = df.copy(deep=True)
 
     for value in top_dummies:
         df_dummies[str(value).replace(' ', '_').replace('-','_') + '_onehot'] = df_dummies[var].apply(lambda x: 1 if value in x else 0)
-    #df_dummies.drop(labels=var, axis=1, inplace=True)
     return df_dummies
 
 def regress_coefficient_month_html(df, country, genre):
+    """Regression on month interactive visualization
+    """
     
     start_year = df['Year'].unique().min()
     end_year = df['Year'].unique().max()
     year_interval = 3
     years_list = [year for year in range(start_year+year_interval, end_year+4, year_interval)]
     
-    # create month
+    #create month
     months = list(calendar.month_name)[1:]
     months = months[:-1]
     months.insert(0, 'const')
     months_list = ['const']+['Month_{}'.format(i) for i in range(1, 12)]
     
-    # regression country selected
+    #regression country selected
     if country != "All 87 countries":
         df_aux = df [df ['Countries (Freebase ID:name tuples)'].str.contains(country)]
         
-    # regression genre selected
+    #regression genre selected
     if genre != "All genre":
         df_aux  = df [df ['Genre'].str.contains(genre)]
     
-    # Initialize an empty DataFrame to store coefficients and years
+    #initialize an empty DataFrame to store coefficients and years
     result_df = pd.DataFrame(columns=['Year'] + ['const']+[f'Month_{i}' for i in range(1, 12)])
     
     for year in years_list:
@@ -560,8 +589,7 @@ def regress_coefficient_month_html(df, country, genre):
         df_aux = df[(df['Year'] >= start_year) & (df['Year'] <= year)]
         model = sm.OLS(df_aux['Box office'].values, df_aux[months_list]).fit()
         
-        # Append the results to the DataFrame
+        #append the results to the DataFrame
         result_df = result_df.append({'Year': year, **dict(zip(result_df.columns[1:], zip(model.params,model.bse))),'country':country}, ignore_index=True)
-        #result_df_2 = result_df.append({'Year': year, **dict(zip(result_df.columns[1:],model.bse)),'country':country}, ignore_index=True)
        
     return result_df

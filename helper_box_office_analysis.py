@@ -5,12 +5,27 @@ import plotly.express as px
 from PIL import Image
 import math
 
-
-
+#data processing for each dropdown category in our interactive budget effect analysis plot
 def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatter_dot_table_name, timetable, 
                                         timetable_name, dependent_var, matching_vars,  onehot_vars, control_variables = ['budget']):
+    """
+    Process data for each category in an interactive budget effect analysis plot with dropdowns.
 
-    # Exploding for genres and making linear regression for each genre
+    Args:
+        df_time_stamps: main df containing the dataset with timestamps
+        scatter_dot_table: categories for scatter plot analysis
+        scatter_dot_table_name: name of category for scatter plot analysis
+        timetable: timeframes for analysis
+        timetable_name: name of the timeframe variable
+        dependent_var: dependent variable for analysis
+        matching_vars: variables used for propensity score matching
+        onehot_vars: variables to one-hot encode for modeling
+        control_variables: variables to assess balance on. Default is ['budget']
+    
+    Returns:
+        df_cluster_graph (pd.DataFrame): Processed DataFrame for the interactive graph
+    """
+    #exploding for genres and making linear regression for each genre
     for i, item in enumerate(scatter_dot_table):
         for j, timeframe in enumerate(timetable):
 
@@ -26,7 +41,6 @@ def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatt
             df['is_timeframe'] = (df[timetable_name] == timeframe).astype(int)
             df_time_frame = df[df['is_timeframe']==1]
             print(timeframe, j)
-            #display(df)
     
             print(f"For {item}")
         
@@ -49,8 +63,6 @@ def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatt
                         print("!!!!!!")
                         print()
 
-
-
             if effect_sizes == np.NaN:
                 abs_effect_size = np.NaN
             else:
@@ -67,16 +79,29 @@ def create_data_for_graph_with_dropdown(df_time_stamps, scatter_dot_table, scatt
     
     df_cluster_graph = pd.DataFrame(data, columns = [scatter_dot_table_name, timetable_name, 'Average ' + dependent_var, 'Number of movies', 'p_value', 
                                                      'effect_size', 'abs_effect_size', 'Intercept'])
-    #display(df_cluster_graph)
 
     return df_cluster_graph
 
 
-
-
-
-
+#create interactive plot without dropdown
 def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_color, x, y, x_log=True, title = "yoyoyo", show_legend = False):
+     """
+    Create a scatter plot figure without dropdowns for interactive budget effect analysis.
+
+    Args:
+        df_cluster_graph: processed df for the interactive graph
+        hover_data: variables to display as hover information
+        bubble_size: variable for bubble size in the scatter plot
+        bubble_color: variable for bubble color in the scatter plot
+        x: variable for the x-axis
+        y: variable for the y-axis
+        x_log: whether to use a logarithmic scale for the x-axis
+        title: title for the plot
+        show_legend: whether to show the legend
+
+    Returns:
+        fig: scatter plot figure
+    """
     fig = px.scatter(df_cluster_graph, x=x, y=y, color=bubble_color, 
                          custom_data=hover_data, size=bubble_size)
 
@@ -99,12 +124,21 @@ def create_figure_no_dropdown(df_cluster_graph, hover_data, bubble_size, bubble_
  
     return fig
 
-
-
-
-
+#creates interactive visualization with (optional) dropdown
 def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_name, hover_data, bubble_size, bubble_color, x, y, x_log=True, y_log=True, title='TMP title', show_legend=True):
-
+        """
+    Create an interactive visualization with an optional dropdown for budget effect analysis.
+    
+    Args: almost same as previous function with the addition of:
+        drop_down_table: values for the dropdown.
+        drop_down_name: name of the dropdown variable
+        
+    Returns:
+        fig: scatterplot with dropdown menu
+        """
+    
+    
+    
     if x_log:
         df_cluster_graph['log ' + x] =df_cluster_graph[x].apply(lambda x: np.log(x))
         x = 'log ' + x
@@ -168,15 +202,27 @@ def create_figure_with_dropdown(df_cluster_graph, drop_down_table, drop_down_nam
                       xaxis=dict(title=x, titlefont=dict(size=14)),
                       yaxis=dict(title=y, titlefont=dict(size=14)),
                       showlegend=show_legend)
-    
-    
-    #fig.show(config={'displayModeBar': False})
 
     return fig
 
-    #fig.write_html("../project-website/_includes/kmeans_per_genre.html", config={'displayModeBar': False})
-
+#create visualization using country flags as colors for each weighted point in graph
 def fig_with_flags(fig, df, size, x, y, x_log = True, y_log=True):
+        """
+    Add flag images to a scatter plot figure based on specified DataFrame.
+
+    Args:
+        fig: scatter plot figure.
+        df: input df flag placement
+        size: variable for sizing the flags
+        x: variable for the x-axis
+        y: variable for the y-axis
+        x_log: whether to use a logarithmic scale for the x-axis
+        y_log: whether to use a logarithmic scale for the y-axis
+
+    Returns:
+        fig: scatter plot figure with added flag images.
+    """
+
 
     fig.update_traces(marker_color="rgba(0,0,0,0)")
                       

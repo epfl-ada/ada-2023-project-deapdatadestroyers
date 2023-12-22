@@ -155,10 +155,6 @@ def load_movie_kaggle():
     df_kaggle_movie.rename(columns={'title': 'Name', 'revenue': 'Box office', 'id': 'movieId', 'release_date': 'Release date', 'imdb_id': 'tconst'}, inplace=True)
     df_kaggle_movie['Box office'] = df_kaggle_movie['Box office'].replace(0, np.nan)
     
-    #df_kaggle_movie['movieId'] = pd.to_numeric(df_kaggle_movie['movieId'], errors='coerce')
-    #df_kaggle_movie.dropna(subset=['movieId'], inplace=True)
-    #df_kaggle_movie['movieId'] = df_kaggle_movie['movieId'].astype(int)
-
     #convert the 'Release date' column of movie dataset to YYYY-MM-DD format with 3 new columns : 'Year', 'Day'
     df_kaggle_movie['Year'] = np.nan
     df_kaggle_movie['Month'] = np.nan
